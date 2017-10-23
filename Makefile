@@ -1,6 +1,6 @@
-SKETCH := blink/blink.ino
-
 ARDUINO := arduino
+
+SKETCH := my_service/my_service.ino
 
 PACKAGE := adafruit
 ARCH := nrf52
@@ -16,15 +16,16 @@ BUILD_DIR = $(CURRENT_DIR)/build
 
 AFLAGS  = --pref build.path=$(BUILD_DIR)
 AFLAGS += --preserve-temp-files
+#AFLAGS += -v
 
 build:
 	$(ARDUINO) --verify $(AFLAGS) $(SKETCH_PATH) --board $(FULLBOARD) --port $(PORT)
 
 upload:
 	$(ARDUINO) --upload $(AFLAGS) $(SKETCH_PATH) --board $(FULLBOARD) --port $(PORT)
+	if [ -n "$(MONITOR)" ]; then screen $(PORT) $(MONITOR); fi
 
 clean:
-	rm -r $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)
 
 rebuild: clean build
-
