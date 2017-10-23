@@ -26,13 +26,11 @@ MyCharacteristicRead::MyCharacteristicRead() : BLECharacteristic(new uint8_t[16]
 
 
 err_t MyCharacteristicRead::begin() {
-	Serial.println("My characteristic read begins");
+	Serial.println("[READ] begin");
 	err_t e = BLECharacteristic::begin();
 	if (e) { return e; }
 
 	write(2);    // Set the characteristic to 'Wrist' (2)
-
-	Serial.println("Data written");
 
 	return e;
 }

@@ -1,6 +1,7 @@
 ARDUINO := arduino
 
-SKETCH := my_service/my_service.ino
+TARGET := my_service
+SKETCH := $(TARGET)/$(TARGET).ino
 
 PACKAGE := adafruit
 ARCH := nrf52

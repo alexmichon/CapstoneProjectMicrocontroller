@@ -175,15 +175,8 @@ void loop()
     // If it is connected but CCCD is not enabled
     // The characteristic's value is still updated although notification is not sent
     if ( charNotify.notify(data1, sizeof(data1)) ){
-      Serial.print("Char 1 updated to: "); Serial.println(bps); 
-    }else{
-      Serial.println("ERROR: Notify not set in the CCCD or not connected!");
+      Serial.print("[NOTIFY] value updated to: "); Serial.println(bps); 
     }
-
-    uint8_t value;
-    uint16_t len = charSend.read(&value);
-    Serial.print("Len = ");Serial.println(len);
-    Serial.printf("Value %u\n", value);
   }
 
   // Only send update once per second

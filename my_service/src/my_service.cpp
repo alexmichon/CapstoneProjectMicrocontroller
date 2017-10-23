@@ -14,7 +14,7 @@ MyService::MyService() : BLEService(new uint8_t[16] {UUID128_MY_SERVICE}),
 
 
 err_t MyService::begin() {
-	Serial.println("My service begins");
+	Serial.println("[MY_SERVICE] begin");
 	err_t e = BLEService::begin();
 	if (e) { return e; }
 
