@@ -179,6 +179,10 @@ void loop()
     }
   }
 
+  if (Serial.available()) {
+    charRead.write(Serial.read());
+  }
+
   // Only send update once per second
   delay(1000);
 }
