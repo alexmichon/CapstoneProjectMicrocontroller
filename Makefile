@@ -1,6 +1,6 @@
 ARDUINO := arduino
 
-TARGET := my_service
+TARGET := feather52
 SKETCH := $(TARGET)/$(TARGET).ino
 
 PACKAGE := adafruit

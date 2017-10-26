@@ -1,5 +1,5 @@
 #include <bluefruit.h>
-#include "src/my_service.h"
+#include "src/ble/ble_service_sensors.h"
 
 
 #define BLE_MANUFACTURER "Adafruit Industries"
@@ -19,10 +19,7 @@
 //BLECharacteristic char1 = BLECharacteristic(new uint8_t[16] {UUID128_CHAR1});
 //BLECharacteristic char2 = BLECharacteristic(new uint8_t[16] {UUID128_CHAR2});
 
-MyService service = MyService();
-MyCharacteristicNotify charNotify;
-MyCharacteristicSend charSend;
-MyCharacteristicRead charRead;
+BLEServiceSensors service = BLEServiceSensors();
 
 BLEDis bledis;    // DIS (Device Information Service) helper class instance
 BLEBas blebas;    // BAS (Battery Service) helper class instance
@@ -113,18 +110,7 @@ void startAdv(void)
 
 void setupService(void)
 {
-  // Configure the Heart Rate Monitor service
-  // See: https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.service.heart_rate.xml
-  // Supported Characteristics:
-  // Name                         UUID    Requirement Properties
-  // ---------------------------- ------  ----------- ----------
-  // Heart Rate Measurement       0x2A37  Mandatory   Notify
-  // Body Sensor Location         0x2A38  Optional    Read
-  // Heart Rate Control Point     0x2A39  Conditional Write       <-- Not used here
   service.begin();
-  charNotify = service.getCharacteristicNotify();
-  charSend = service.getCharacteristicSend();
-  charRead = service.getCharacteristicRead();
 }
 
 void connect_callback(uint16_t conn_handle)
@@ -174,13 +160,8 @@ void loop()
     // Note: We use .notify instead of .write!
     // If it is connected but CCCD is not enabled
     // The characteristic's value is still updated although notification is not sent
-    if ( charNotify.notify(data1, sizeof(data1)) ){
-      Serial.print("[NOTIFY] value updated to: "); Serial.println(bps); 
-    }
-  }
-
-  if (Serial.available()) {
-    charRead.write(Serial.read());
+    service.notifyImu(bps);
+    service.notifyEncoder(bps);
   }
 
   // Only send update once per second

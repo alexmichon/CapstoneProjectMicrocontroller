@@ -1,0 +1,44 @@
+#ifndef BLE_SERVICE_SENSORS_H
+#define BLE_SERVICE_SENSORS_H
+
+
+#include <bluefruit.h>
+
+#include "ble_characteristic_startstop.h"
+#include "ble_characteristic_imu.h"
+#include "ble_characteristic_encoder.h" 
+
+
+#define UUID128_BLE_SERVICE_SENSORS 0x72, 0xcb, 0xa5, 0xa9, 0x87, 0x38, 0x48, 0xab, 0xb6, 0xe0, 0x34, 0x1a, 0x93, 0x16, 0x95, 0x7f
+
+
+
+class BLEServiceSensors : public BLEService {
+
+public:
+
+	BLEServiceSensors();
+
+	err_t begin();
+
+	BLECharacteristicStartStop getStartStopCharacteristic();
+	BLECharacteristicImu getImuCharacteristic();
+	BLECharacteristicEncoder getEncoderCharacteristic();
+
+	bool notifyImu(uint16_t value);
+	bool notifyEncoder(uint16_t value);
+
+	void enable(bool value);
+
+private:
+
+	BLECharacteristicStartStop startStopCharacteristic;
+	BLECharacteristicImu imuCharacteristic;
+	BLECharacteristicEncoder encoderCharacteristic;
+
+	bool enabled;
+
+};
+
+
+#endif

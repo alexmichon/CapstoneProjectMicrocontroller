@@ -1,6 +1,6 @@
-#include "my_characteristic_notify.h"
+#include "ble_characteristic_encoder.h"
 
-MyCharacteristicNotify::MyCharacteristicNotify() : BLECharacteristic(new uint8_t[16]{UUID128_CHAR_NOTIFY}) {
+BLECharacteristicEncoder::BLECharacteristicEncoder() : BLECharacteristic(new uint8_t[16]{UUID128_CHAR_ENCODER}) {
 	// Note: You must call .begin() on the BLEService before calling .begin() on
 	// any characteristic(s) within that service definition.. Calling .begin() on
 	// a BLECharacteristic will cause it to be added to the last BLEService that
@@ -25,12 +25,13 @@ MyCharacteristicNotify::MyCharacteristicNotify() : BLECharacteristic(new uint8_t
   	setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
   	setFixedLen(2);
 
-  	setCccdWriteCallback(&MyCharacteristicNotify::cccd_callback);  // Optionally capture CCCD updates
+  	setStringDescriptor("Encoder characteristic");
 }
 
 
 
-err_t MyCharacteristicNotify::begin() {
+
+err_t BLECharacteristicEncoder::begin() {
 	Serial.println("[NOTIFY] begin");
   	uint8_t data1[2] = { 0b00000110, 0x40 }; // Set the characteristic to use 8-bit values, with the sensor connected and detected
 	
@@ -40,21 +41,4 @@ err_t MyCharacteristicNotify::begin() {
   	notify(data1, 2);                   // Use .notify instead of .write!
 
   	return e;
-}
-
-
-void MyCharacteristicNotify::cccd_callback(BLECharacteristic& chr, uint16_t cccd_value) {
-	// Display the raw request packet
-    Serial.print("[NOTIFY] CCCD Updated: ");
-    //Serial.printBuffer(request->data, request->len);
-    Serial.print(cccd_value);
-    Serial.println("");
-
-    // Check the characteristic this CCCD update is associated with in case
-    // this handler is used for multiple CCCD records.
-    if (chr.notifyEnabled()) {
-        Serial.println("[NOTIFY] enabled");
-    } else {
-        Serial.println("[NOTIFY] disabled");
-    }
 }
