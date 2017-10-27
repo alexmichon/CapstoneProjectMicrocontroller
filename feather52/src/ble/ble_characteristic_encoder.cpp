@@ -1,6 +1,14 @@
 #include "ble_characteristic_encoder.h"
 
-BLECharacteristicEncoder::BLECharacteristicEncoder() : BLECharacteristic(new uint8_t[16]{UUID128_CHAR_ENCODER}) {
+static void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value);
+
+BLECharacteristicEncoder::BLECharacteristicEncoder() : BLECharacteristic(UUID128_CHAR_ENCODER) {
+	
+}
+
+
+
+err_t BLECharacteristicEncoder::begin() {
 	// Note: You must call .begin() on the BLEService before calling .begin() on
 	// any characteristic(s) within that service definition.. Calling .begin() on
 	// a BLECharacteristic will cause it to be added to the last BLEService that
@@ -25,20 +33,19 @@ BLECharacteristicEncoder::BLECharacteristicEncoder() : BLECharacteristic(new uin
   	setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
   	setFixedLen(2);
 
-  	setStringDescriptor("Encoder characteristic");
+  	//setStringDescriptor("Encoder characteristic");
+  	setCccdWriteCallback(cccd_callback);
+
+	Serial.println("[ENCODER] begin");
+  	uint8_t data1[2] = { 0b00000110, 0x40 }; // Set the characteristic to use 8-bit values, with the sensor connected and detected
+	
+	VERIFY_STATUS( BLECharacteristic::begin() );
+	
+  	return ERROR_NONE;
 }
 
 
-
-
-err_t BLECharacteristicEncoder::begin() {
-	Serial.println("[NOTIFY] begin");
-  	uint8_t data1[2] = { 0b00000110, 0x40 }; // Set the characteristic to use 8-bit values, with the sensor connected and detected
-	
-	err_t e = BLECharacteristic::begin();
-	if (e) { return e; }
-	
-  	notify(data1, 2);                   // Use .notify instead of .write!
-
-  	return e;
+static void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value) {
+	Serial.print("Received Encoder CCCD: ");
+	Serial.println(cccd_value);
 }

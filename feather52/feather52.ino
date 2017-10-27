@@ -7,18 +7,6 @@
 #define BLE_NAME "Bluefruit Alex"
 
 
-
-
-
-//#define UUID128_SERVICE 0x72, 0xcb, 0xa5, 0xa9, 0x87, 0x38, 0x48, 0xab, 0xb6, 0xe0, 0x34, 0x1a, 0x93, 0x16, 0x95, 0x7f
-//#define UUID128_CHAR1 0x65, 0x5a, 0x2e, 0xc6, 0x15, 0x16, 0x48, 0xcd, 0xb0, 0x51, 0xd9, 0xd5, 0x3c, 0xd8, 0x17, 0x41
-//#define UUID128_CHAR2 0xb8, 0xb9, 0xca, 0xba, 0xd0, 0x29, 0x43, 0xdc, 0x87, 0x1c, 0x79, 0x8b, 0x5a, 0x31, 0xe2, 0x02
-
-
-//BLEService        service = BLEService(new uint8_t[16] {UUID128_SERVICE});
-//BLECharacteristic char1 = BLECharacteristic(new uint8_t[16] {UUID128_CHAR1});
-//BLECharacteristic char2 = BLECharacteristic(new uint8_t[16] {UUID128_CHAR2});
-
 BLEServiceSensors service = BLEServiceSensors();
 
 BLEDis bledis;    // DIS (Device Information Service) helper class instance
@@ -160,8 +148,8 @@ void loop()
     // Note: We use .notify instead of .write!
     // If it is connected but CCCD is not enabled
     // The characteristic's value is still updated although notification is not sent
-    service.notifyImu(bps);
-    service.notifyEncoder(bps);
+    service.notifyImu(data1, sizeof(data1));
+    service.notifyEncoder(data1, sizeof(data1));
   }
 
   // Only send update once per second

@@ -1,6 +1,14 @@
 #include "ble_characteristic_imu.h"
 
-BLECharacteristicImu::BLECharacteristicImu() : BLECharacteristic(new uint8_t[16]{UUID128_CHAR_IMU}) {
+static void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value);
+
+BLECharacteristicImu::BLECharacteristicImu() : BLECharacteristic(UUID128_CHAR_IMU) {
+	
+}
+
+
+
+err_t BLECharacteristicImu::begin() {
 	// Note: You must call .begin() on the BLEService before calling .begin() on
 	// any characteristic(s) within that service definition.. Calling .begin() on
 	// a BLECharacteristic will cause it to be added to the last BLEService that
@@ -25,19 +33,19 @@ BLECharacteristicImu::BLECharacteristicImu() : BLECharacteristic(new uint8_t[16]
   	setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
   	setFixedLen(2);
 
-  	setStringDescriptor("IMU characteristic");
+  	//setStringDescriptor("IMU characteristic");
+  	setCccdWriteCallback(cccd_callback);
+
+	Serial.println("[IMU] begin");
+  	uint8_t data1[2] = { 0b00000110, 0x40 }; // Set the characteristic to use 8-bit values, with the sensor connected and detected
+	
+	VERIFY_STATUS( BLECharacteristic::begin() );
+  	
+  	return ERROR_NONE;
 }
 
 
-
-err_t BLECharacteristicImu::begin() {
-	Serial.println("[NOTIFY] begin");
-  	uint8_t data1[2] = { 0b00000110, 0x40 }; // Set the characteristic to use 8-bit values, with the sensor connected and detected
-	
-	err_t e = BLECharacteristic::begin();
-	if (e) { return e; }
-	
-  	notify(data1, 2);                   // Use .notify instead of .write!
-
-  	return e;
+static void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value) {
+	Serial.print("Received IMU CCCD: ");
+	Serial.println(cccd_value);
 }

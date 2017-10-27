@@ -1,31 +1,33 @@
 #include "ble_service_sensors.h"
 #include "ble_characteristic_startstop.h"
 
-BLECharacteristicStartStop::BLECharacteristicStartStop() : BLECharacteristic(new uint8_t[16] {UUID128_CHAR_STARTSTOP}) {
-	setProperties(CHR_PROPS_WRITE);
-	setPermission(SECMODE_OPEN, SECMODE_OPEN);
-	setFixedLen(1);
 
-	setStringDescriptor("Start / Stop characteristic");
 
-	setWriteCallback(&BLECharacteristicStartStop::write_callback);
+static void write_callback(BLECharacteristic& chr, uint8_t* data, uint16_t len, uint16_t offset);
+
+BLECharacteristicStartStop::BLECharacteristicStartStop() : BLECharacteristic(UUID128_CHAR_STARTSTOP) {
+	
 }
 
 
 err_t BLECharacteristicStartStop::begin() {
-	Serial.println("[SEND] begin");
-	err_t e = BLECharacteristic::begin();
-	if (e) { return e; }
+	setProperties(CHR_PROPS_WRITE);
+	setPermission(SECMODE_NO_ACCESS, SECMODE_OPEN);
+	setFixedLen(1);
 
-	uint8_t value;
-  	read(&value);
-	
-	return e;
+	//setStringDescriptor("Start / Stop characteristic");
+
+	setWriteCallback(write_callback);
+
+	Serial.println("[STARTSTOP] begin");
+	VERIFY_STATUS( BLECharacteristic::begin() );
+
+	return ERROR_NONE;
 }
 
 
-void BLECharacteristicStartStop::write_callback(BLECharacteristic& chr, uint8_t* data, uint16_t len, uint16_t offset) {
-	Serial.print("[SEND] Received value: ");
+static void write_callback(BLECharacteristic& chr, uint8_t* data, uint16_t len, uint16_t offset) {
+	Serial.print("[STARTSTOP] Received value: ");
 	for (int i = offset; i < len; i++) {
 		Serial.print(*(data+i));
 	}

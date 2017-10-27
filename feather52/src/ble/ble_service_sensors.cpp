@@ -2,11 +2,11 @@
 
 
 
-BLEServiceSensors::BLEServiceSensors() : BLEService(new uint8_t[16] {UUID128_BLE_SERVICE_SENSORS}),
+BLEServiceSensors::BLEServiceSensors() : BLEService(UUID128_BLE_SERVICE_SENSORS),
 	startStopCharacteristic(BLECharacteristicStartStop()),
 	imuCharacteristic(BLECharacteristicImu()),
 	encoderCharacteristic(BLECharacteristicEncoder()),
-	enabled(false)
+	enabled(true)
 {
 	
 }
@@ -15,20 +15,14 @@ BLEServiceSensors::BLEServiceSensors() : BLEService(new uint8_t[16] {UUID128_BLE
 
 
 err_t BLEServiceSensors::begin() {
-	Serial.println("[BLE_SERVICE_SENSORS] begin");
-	err_t e = BLEService::begin();
-	if (e) { return e; }
+	Serial.println("[SERVICE_SENSORS] begin");
+	VERIFY_STATUS( BLEService::begin() );
 
-	e = startStopCharacteristic.begin();
-	if (e) { return e; }
+	VERIFY_STATUS( startStopCharacteristic.begin() 	);
+	VERIFY_STATUS( imuCharacteristic.begin() 		);
+	VERIFY_STATUS( encoderCharacteristic.begin() 	);
 
-	e = imuCharacteristic.begin();
-	if (e) { return e; }
-
-	e = encoderCharacteristic.begin();
-	if (e) { return e; }
-
-	return e;
+	return ERROR_NONE;
 }
 
 
@@ -45,15 +39,34 @@ BLECharacteristicEncoder BLEServiceSensors::getEncoderCharacteristic() {
 }
 
 
-bool BLEServiceSensors::notifyImu(uint16_t value) {
-	if (enabled) {
-		return imuCharacteristic.notify(value);
+bool BLEServiceSensors::notifyImu(const void *data, uint16_t len) {
+	if (imuCharacteristic.notifyEnabled()) {
+		Serial.print("[SERVICE_SENSORS] notifying IMU: ");
+		if (imuCharacteristic.notify(data, len)) {
+			Serial.println("OK");
+		}
+		else {
+			Serial.println("ERROR");
+		}
 	}
+	else {
+		Serial.println("IMU notifications disabled");
+	}
+	return true;
 }
 
-bool BLEServiceSensors::notifyEncoder(uint16_t value) {
-	if (enabled) {
-		return encoderCharacteristic.notify(value);
+bool BLEServiceSensors::notifyEncoder(const void *data, uint16_t len) {
+	if (encoderCharacteristic.notifyEnabled()) {
+		Serial.print("[SERVICE_SENSORS] notifying Encoder: ");
+		if (encoderCharacteristic.notify(data, len)) {
+			Serial.println("OK");
+		}
+		else {
+			Serial.println("ERROR");
+		}
+	}
+	else {
+		Serial.println("Encoder notifications disabled");
 	}
 }
 
