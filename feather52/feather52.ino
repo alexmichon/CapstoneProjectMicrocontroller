@@ -8,6 +8,8 @@
 
 
 BLEServiceSensors service = BLEServiceSensors();
+BLECharacteristicImu imuChar;
+BLECharacteristicEncoder encoderChar;
 
 BLEDis bledis;    // DIS (Device Information Service) helper class instance
 BLEBas blebas;    // BAS (Battery Service) helper class instance
@@ -99,6 +101,8 @@ void startAdv(void)
 void setupService(void)
 {
   service.begin();
+  imuChar = service.getImuCharacteristic();
+  encoderChar = service.getEncoderCharacteristic();
 }
 
 void connect_callback(uint16_t conn_handle)
@@ -119,37 +123,27 @@ void disconnect_callback(uint16_t conn_handle, uint8_t reason)
   Serial.println("Advertising!");
 }
 
-/*void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value)
-{
-    // Display the raw request packet
-    Serial.print("CCCD Updated: ");
-    //Serial.printBuffer(request->data, request->len);
-    Serial.print(cccd_value);
-    Serial.println("");
-
-    // Check the characteristic this CCCD update is associated with in case
-    // this handler is used for multiple CCCD records.
-    if (chr.uuid == char1.uuid) {
-        if (chr.notifyEnabled()) {
-            Serial.println("Char 1 'Notify' enabled");
-        } else {
-            Serial.println("Char 1 'Notify' disabled");
-        }
-    }
-}*/
-
 void loop()
 {
   digitalToggle(LED_RED);
   
   if ( Bluefruit.connected() ) {
-    uint8_t data1[2] = { 0b00000110, bps++ };           // Sensor connected, increment BPS value
-    
-    // Note: We use .notify instead of .write!
-    // If it is connected but CCCD is not enabled
-    // The characteristic's value is still updated although notification is not sent
-    service.notifyImu(data1, sizeof(data1));
-    service.notifyEncoder(data1, sizeof(data1));
+        
+    Serial.print("[IMU] Notify: ");
+    if (imuChar.notify(bps++, bps++, bps++)) {
+      Serial.println("OK");
+    }
+    else {
+      Serial.println("Error");
+    }
+
+    Serial.print("[Encoder] Notify: ");
+    if (encoderChar.notify(bps++)) {
+      Serial.println("OK");
+    }
+    else {
+      Serial.println("Error");
+    }
   }
 
   // Only send update once per second

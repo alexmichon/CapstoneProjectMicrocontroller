@@ -3,6 +3,8 @@
 
 #include <bluefruit.h>
 
+
+
 const uint8_t UUID128_CHAR_IMU[16] = 
 { 
 	0xde, 0x70, 0xd8, 0x93, 0xc6, 0x96, 0x46, 0xfa,
@@ -16,6 +18,16 @@ public:
 	BLECharacteristicImu();
 
 	err_t begin();
+	err_t notify(const struct ImuMeasurement meas);
+	err_t notify(int16_t acc_x, int16_t acc_y, int16_t acc_z);
+};
+
+
+struct ImuMeasurement {
+	uint32_t took_at;
+	int16_t acc_x;
+	int16_t acc_y;
+	int16_t acc_z;
 };
 
 

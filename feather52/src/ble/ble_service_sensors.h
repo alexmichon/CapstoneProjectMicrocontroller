@@ -4,7 +4,6 @@
 
 #include <bluefruit.h>
 
-#include "ble_characteristic_startstop.h"
 #include "ble_characteristic_imu.h"
 #include "ble_characteristic_encoder.h" 
 
@@ -24,22 +23,16 @@ public:
 
 	err_t begin();
 
-	BLECharacteristicStartStop getStartStopCharacteristic();
 	BLECharacteristicImu getImuCharacteristic();
 	BLECharacteristicEncoder getEncoderCharacteristic();
 
-	bool notifyImu(const void *data, uint16_t len);
-	bool notifyEncoder(const void *data, uint16_t len);
-
-	void enable(bool value);
+	//bool notifyImu(const void *data, uint16_t len);
+	//bool notifyEncoder(const void *data, uint16_t len);
 
 private:
 
-	BLECharacteristicStartStop startStopCharacteristic;
 	BLECharacteristicImu imuCharacteristic;
 	BLECharacteristicEncoder encoderCharacteristic;
-
-	bool enabled;
 
 };
 

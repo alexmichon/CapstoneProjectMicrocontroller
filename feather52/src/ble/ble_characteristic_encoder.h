@@ -3,6 +3,14 @@
 
 #include <bluefruit.h>
 
+
+/*
+ * MA3
+ * 10-bit analog output
+ */
+
+
+
 const uint8_t UUID128_CHAR_ENCODER[16] = 
 {
 	0x27, 0xd6, 0x25, 0x83, 0xae, 0xcb, 0x46, 0x69, 
@@ -16,6 +24,13 @@ public:
 	BLECharacteristicEncoder();
 
 	err_t begin();
+	err_t notify(const struct EncoderMeasurement meas);
+	err_t notify(int16_t angle);
+};
+
+struct EncoderMeasurement {
+	uint32_t took_at;
+	int16_t angle;
 };
 
 

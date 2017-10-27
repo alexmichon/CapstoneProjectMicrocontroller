@@ -3,49 +3,35 @@
 static void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value);
 
 BLECharacteristicEncoder::BLECharacteristicEncoder() : BLECharacteristic(UUID128_CHAR_ENCODER) {
-	
+	setProperties(CHR_PROPS_NOTIFY);
+  	setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
+  	setCccdWriteCallback(cccd_callback);
+  	setFixedLen(6);
 }
 
 
 
 err_t BLECharacteristicEncoder::begin() {
-	// Note: You must call .begin() on the BLEService before calling .begin() on
-	// any characteristic(s) within that service definition.. Calling .begin() on
-	// a BLECharacteristic will cause it to be added to the last BLEService that
-	// was 'begin()'ed!
-
-	// Configure the Heart Rate Measurement characteristic
-	// See: https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.heart_rate_measurement.xml
-	// Permission = Notify
-	// Min Len    = 1
-	// Max Len    = 8
-	//    B0      = UINT8  - Flag (MANDATORY)
-	//      b5:7  = Reserved
-	//      b4    = RR-Internal (0 = Not present, 1 = Present)
-	//      b3    = Energy expended status (0 = Not present, 1 = Present)
-	//      b1:2  = Sensor contact status (0+1 = Not supported, 2 = Supported but contact not detected, 3 = Supported and detected)
-	//      b0    = Value format (0 = UINT8, 1 = UINT16)
-	//    B1      = UINT8  - 8-bit heart rate measurement value in BPM
-	//    B2:3    = UINT16 - 16-bit heart rate measurement value in BPM
-	//    B4:5    = UINT16 - Energy expended in joules
-	//    B6:7    = UINT16 - RR Internal (1/1024 second resolution)
-	setProperties(CHR_PROPS_NOTIFY);
-  	setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
-  	setFixedLen(2);
-
-  	//setStringDescriptor("Encoder characteristic");
-  	setCccdWriteCallback(cccd_callback);
-
-	Serial.println("[ENCODER] begin");
-  	uint8_t data1[2] = { 0b00000110, 0x40 }; // Set the characteristic to use 8-bit values, with the sensor connected and detected
+	Serial.println("[Encoder] begin");
 	
 	VERIFY_STATUS( BLECharacteristic::begin() );
 	
   	return ERROR_NONE;
 }
 
+err_t BLECharacteristicEncoder::notify(const struct EncoderMeasurement meas) {
+	return BLECharacteristic::notify((const void*)&meas, (uint16_t) sizeof(meas));
+}
+
+err_t BLECharacteristicEncoder::notify(int16_t angle) {
+	struct EncoderMeasurement meas {
+		millis(),
+		angle
+	};
+	
+	return BLECharacteristicEncoder::notify(meas);
+}
 
 static void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value) {
-	Serial.print("Received Encoder CCCD: ");
-	Serial.println(cccd_value);
+	Serial.println("[Encoder] CCCD Callback");
 }

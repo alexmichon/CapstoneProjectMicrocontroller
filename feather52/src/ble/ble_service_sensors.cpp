@@ -3,10 +3,8 @@
 
 
 BLEServiceSensors::BLEServiceSensors() : BLEService(UUID128_BLE_SERVICE_SENSORS),
-	startStopCharacteristic(BLECharacteristicStartStop()),
 	imuCharacteristic(BLECharacteristicImu()),
-	encoderCharacteristic(BLECharacteristicEncoder()),
-	enabled(true)
+	encoderCharacteristic(BLECharacteristicEncoder())
 {
 	
 }
@@ -18,16 +16,10 @@ err_t BLEServiceSensors::begin() {
 	Serial.println("[SERVICE_SENSORS] begin");
 	VERIFY_STATUS( BLEService::begin() );
 
-	VERIFY_STATUS( startStopCharacteristic.begin() 	);
 	VERIFY_STATUS( imuCharacteristic.begin() 		);
 	VERIFY_STATUS( encoderCharacteristic.begin() 	);
 
 	return ERROR_NONE;
-}
-
-
-BLECharacteristicStartStop BLEServiceSensors::getStartStopCharacteristic() {
-	return startStopCharacteristic;
 }
 
 BLECharacteristicImu BLEServiceSensors::getImuCharacteristic() {
@@ -38,11 +30,11 @@ BLECharacteristicEncoder BLEServiceSensors::getEncoderCharacteristic() {
 	return encoderCharacteristic;
 }
 
-
-bool BLEServiceSensors::notifyImu(const void *data, uint16_t len) {
+/*
+bool BLEServiceSensors::notifyImu() {
 	if (imuCharacteristic.notifyEnabled()) {
 		Serial.print("[SERVICE_SENSORS] notifying IMU: ");
-		if (imuCharacteristic.notify(data, len)) {
+		if (imuCharacteristic.notify((uint16_t) data, (uint16_t) data, (uint16_t) data)) {
 			Serial.println("OK");
 		}
 		else {
@@ -58,7 +50,7 @@ bool BLEServiceSensors::notifyImu(const void *data, uint16_t len) {
 bool BLEServiceSensors::notifyEncoder(const void *data, uint16_t len) {
 	if (encoderCharacteristic.notifyEnabled()) {
 		Serial.print("[SERVICE_SENSORS] notifying Encoder: ");
-		if (encoderCharacteristic.notify(data, len)) {
+		if (encoderCharacteristic.notify((int16_t) data)) {
 			Serial.println("OK");
 		}
 		else {
@@ -69,8 +61,4 @@ bool BLEServiceSensors::notifyEncoder(const void *data, uint16_t len) {
 		Serial.println("Encoder notifications disabled");
 	}
 }
-
-
-void BLEServiceSensors::enable(bool value) {
-	enabled = value;
-}
+*/
