@@ -25,12 +25,12 @@ public:
 
 	err_t begin();
 	err_t notify(const struct EncoderMeasurement meas);
-	err_t notify(int16_t angle);
+	err_t notify(float angle);
 };
 
 struct EncoderMeasurement {
 	uint32_t took_at;
-	int16_t angle;
+	float angle;
 };
 
 

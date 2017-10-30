@@ -1,10 +1,38 @@
 #include <bluefruit.h>
 #include "src/ble/ble_service_sensors.h"
 
+#include "src/sensors/imu.h"
+#include "src/sensors/encoder.h"
+
+
+
+
+
+#define ENCODER_PIN A0
 
 #define BLE_MANUFACTURER "Adafruit Industries"
 #define BLE_MODEL "Bluefruit Feather52"
 #define BLE_NAME "Bluefruit Alex"
+
+#define SIMULATION
+
+
+
+
+
+#ifndef SIMULATION
+IMU imu = IMU();
+Encoder encoder = Encoder(ENCODER_PIN);
+#else
+IMU imu = IMU(IMU_SOURCE_RANDOM);
+Encoder encoder = Encoder(ENCODER_SOURCE_RANDOM, ENCODER_PIN);
+#endif
+
+int16_t acc[3];
+int16_t gyr[3];
+int16_t mag[3];
+float angle;
+
 
 
 BLEServiceSensors service = BLEServiceSensors();
@@ -14,9 +42,12 @@ BLECharacteristicEncoder encoderChar;
 BLEDis bledis;    // DIS (Device Information Service) helper class instance
 BLEBas blebas;    // BAS (Battery Service) helper class instance
 
-uint8_t  bps = 0;
-char name[100];
-char buffer[100];
+
+
+
+
+
+
 
 // Advanced function prototypes
 void startAdv(void);
@@ -30,18 +61,21 @@ void blink_timer_callback(TimerHandle_t xTimerID);
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Bluefruit52 Custom Service");
+  Serial.println("Capstone Project Microcontroller");
   Serial.println("-----------------------\n");
 
-  // Initialise the Bluefruit module
+  // Initialize sensors
+  imu.setup();
+  encoder.setup();
+
+  // Initialize the Bluefruit module
   Serial.println("Initialise the Bluefruit nRF52 module");
   Bluefruit.begin();
 
   // Set the advertised device name (keep it short!)
-  Serial.println("Setting Device Name");
+  Serial.println("Setting Device Name: ");
   Bluefruit.setName(BLE_NAME);
-  Bluefruit.getName(name, sizeof(name));
-  Serial.println(name);
+  Serial.println(BLE_NAME);
 
   // Set the connect/disconnect callback handlers
   Bluefruit.setConnectCallback(connect_callback);
@@ -129,25 +163,27 @@ void loop()
   
   if ( Bluefruit.connected() ) {
         
-    Serial.print("[IMU] Notify: ");
-    if (imuChar.notify(bps++, bps++, bps++)) {
-      Serial.println("OK");
-    }
-    else {
-      Serial.println("Error");
-    }
+    imu.read_acc(acc);
+    imuChar.notify(IMU_DATA_ACC, acc[0], acc[1], acc[2]);
 
-    Serial.print("[Encoder] Notify: ");
-    if (encoderChar.notify(bps++)) {
-      Serial.println("OK");
-    }
-    else {
-      Serial.println("Error");
-    }
+    delay(100);
+    
+    imu.read_gyr(gyr);
+    imuChar.notify(IMU_DATA_GYR, gyr[0], gyr[1], gyr[2]);
+
+    delay(100);
+
+    imu.read_mag(mag);
+    imuChar.notify(IMU_DATA_MAG, mag[0], mag[1], mag[2]);
+
+    delay(100);
+
+    encoder.read_angle(&angle);
+    encoderChar.notify(angle);
   }
 
   // Only send update once per second
-  delay(1000);
+  delay(100);
 }
 
 /**
