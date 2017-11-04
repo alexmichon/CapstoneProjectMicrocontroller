@@ -7,10 +7,14 @@ Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_L3GD20_Unified gyro = Adafruit_L3GD20_Unified(20);
 #define PIN 7
-int counter = 0;
-int state = 0;
-int laststate = 0; 
-double lastdegree = 0;
+//int counter = 0;
+//int state = 0;
+//int laststate = 0; 
+//double lastdegree = 0;
+
+int sensorValue = 0;        // value read from the pot
+double degree;
+double range = 5798.0;
 
 void setup(void)
 {
@@ -18,9 +22,7 @@ void setup(void)
   while (!Serial);     // will pause Zero, Leonardo, etc until serial console opens
 #endif
   pinMode(PIN, INPUT);
-  Serial.begin(115200);
-  Serial.println("Accelerometer Test"); Serial.println("");
-  Serial.println("Gyroscope Test"); Serial.println("");
+  Serial.begin(9600);
   /* Enable auto-ranging */
   gyro.enableAutoRange(true);
 
@@ -43,32 +45,26 @@ void setup(void)
 void loop(void)
 {
   /* Delay before the next sample */
-  state = digitalRead(PIN);
-  if(state != laststate) {   
-    if (state == HIGH) {
-          /* Get a new sensor event */
-          sensors_event_t event;
-          accel.getEvent(&event);
-
-          /* Display the results (acceleration is measured in m/s^2) */
-          Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
-          Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
-          Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.print("m/s^2 ");Serial.print("       ");
-          Serial.print("X: "); Serial.print(event.gyro.x); Serial.print("  ");
-          Serial.print("Y: "); Serial.print(event.gyro.y); Serial.print("  ");
-          Serial.print("Z: "); Serial.print(event.gyro.z); Serial.print("  ");
-          Serial.print("rad/s ");
-          Serial.print("degree = ");
-          Serial.println(counter);
-          //do operations here
-          counter = 0;
-    } 
-    laststate = state; 
-  } 
-  if(state == HIGH) {
-    if(counter < 361) {
-    counter++;
+    sensors_event_t event;
+    accel.getEvent(&event);
+    sensorValue = pulseIn(PIN,HIGH);
+    sensors_event_t event2; 
+    gyro.getEvent(&event2);
+    degree = ((double)sensorValue/range)*360;
+    if (range < sensorValue) {
+      range = sensorValue;
     }
-  }
-//  delay(50);
+    /* Display the results (acceleration is measured in m/s^2) */
+    Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
+    Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
+    Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.print("m/s^2 ");Serial.print("       ");
+    Serial.print("X: "); Serial.print(event2.gyro.x); Serial.print("  ");
+    Serial.print("Y: "); Serial.print(event2.gyro.y); Serial.print("  ");
+    Serial.print("Z: "); Serial.print(event2.gyro.z); Serial.print("  ");
+    Serial.print("rad/s "); Serial.print("  ");   
+    Serial.print("degree =   ");    
+    Serial.println(degree);
+    
 }
+
+
