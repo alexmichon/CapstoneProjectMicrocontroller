@@ -14,19 +14,19 @@ class BLECharacteristicImu : public BLECharacteristic {
 public:
 
 	BLECharacteristicImu();
-
-	err_t begin();
+	
 	err_t notify(const struct ImuMeasurement meas);
-	err_t notify(const int16_t type, const int16_t data_x, const int16_t data_y, const int16_t data_z);
+	err_t notify(const uint16_t sensor_id, const uint16_t type, const float data_x, const float data_y, const float data_z);
 };
 
 
 struct ImuMeasurement {
+	uint16_t sensor_id;
+	uint16_t data_type;
 	uint32_t took_at;
-	int16_t type;
-	int16_t data_x;
-	int16_t data_y;
-	int16_t data_z;
+	float data_x;
+	float data_y;
+	float data_z;
 };
 
 

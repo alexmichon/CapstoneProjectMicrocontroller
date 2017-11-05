@@ -7,8 +7,12 @@
 
 
 
+#define ENCODER_ELBOW_ID 1
+#define IMU_ARM_ID 2
 
-#define ENCODER_PIN A0
+
+
+#define ENCODER_PIN 7
 
 #define BLE_MANUFACTURER "Adafruit Industries"
 #define BLE_MODEL "Bluefruit Feather52"
@@ -20,17 +24,11 @@
 
 
 
-#ifndef SIMULATION
 IMU imu = IMU();
 Encoder encoder = Encoder(ENCODER_PIN);
-#else
-IMU imu = IMU(IMU_SOURCE_RANDOM);
-Encoder encoder = Encoder(ENCODER_SOURCE_RANDOM, ENCODER_PIN);
-#endif
 
-int16_t acc[3];
-int16_t gyr[3];
-int16_t mag[3];
+float acc[3];
+float gyr[3];
 float angle;
 
 
@@ -164,45 +162,18 @@ void loop()
   if ( Bluefruit.connected() ) {
         
     imu.read_acc(acc);
-    imuChar.notify(IMU_DATA_ACC, acc[0], acc[1], acc[2]);
+    imuChar.notify(IMU_ARM_ID, IMU_DATA_ACC, acc[0], acc[1], acc[2]);
 
     delay(100);
     
     imu.read_gyr(gyr);
-    imuChar.notify(IMU_DATA_GYR, gyr[0], gyr[1], gyr[2]);
-
-    delay(100);
-
-    imu.read_mag(mag);
-    imuChar.notify(IMU_DATA_MAG, mag[0], mag[1], mag[2]);
+    imuChar.notify(IMU_ARM_ID, IMU_DATA_GYR, gyr[0], gyr[1], gyr[2]);
 
     delay(100);
 
     encoder.read_angle(&angle);
-    encoderChar.notify(angle);
+    encoderChar.notify(ENCODER_ELBOW_ID, angle);
   }
 
-  // Only send update once per second
   delay(100);
-}
-
-/**
- * RTOS Idle callback is automatically invoked by FreeRTOS
- * when there are no active threads. E.g when loop() calls delay() and
- * there is no bluetooth or hw event. This is the ideal place to handle
- * background data.
- * 
- * NOTE: FreeRTOS is configured as tickless idle mode. After this callback
- * is executed, if there is time, freeRTOS kernel will go into low power mode.
- * Therefore waitForEvent() should not be called in this callback.
- * http://www.freertos.org/low-power-tickless-rtos.html
- * 
- * WARNING: This function MUST NOT call any blocking FreeRTOS API 
- * such as delay(), xSemaphoreTake() etc ... for more information
- * http://www.freertos.org/a00016.html
- */
-void rtos_idle_callback(void)
-{
-  // Don't call any other FreeRTOS blocking API()
-  // Perform background task(s) here
 }

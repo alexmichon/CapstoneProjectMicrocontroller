@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#include <Adafruit_Sensor.h>
+#include <Adafruit_LSM303_U.h>
+#include <Adafruit_L3GD20_U.h>
+
 
 #define ADXL345_ADDRESS 			(0xA6 >> 1)
 #define ADXL345_REGISTER_XLSB 		(0x32)
@@ -28,31 +32,24 @@
 #define IMU_DATA_MAG 2
 
 
+#define ACCELEROMETER_ID 1
+#define GYROSCOPE_ID 2
+
+
 class IMU {
 public:
 
 	IMU();
-	IMU(uint8_t source);
 
 	void setup();
 
-	void read_acc(int16_t *acc);
-	void read_gyr(int16_t *gyr);
-	void read_mag(int16_t *mag);	
-
-	
+	void read_acc(float *acc);
+	void read_gyr(float *gyr);
 
 private:
 
-	void init_acc();
-	void init_gyr();
-	void init_mag();
-
-	void init(uint8_t address, uint8_t reg, uint8_t value);
-	void read(int16_t *buffer, int16_t len, uint8_t address, uint8_t register);
-
-	uint8_t _source;
-
+	Adafruit_LSM303_Accel_Unified accel;
+	Adafruit_L3GD20_Unified gyro;
 };
 
 #endif
