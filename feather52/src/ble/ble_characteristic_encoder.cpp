@@ -6,7 +6,7 @@ BLECharacteristicEncoder::BLECharacteristicEncoder() : BLECharacteristic(UUID128
 	setProperties(CHR_PROPS_NOTIFY);
   	setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
   	setCccdWriteCallback(cccd_callback);
-  	setFixedLen(10);
+  	setFixedLen(8);
 }
 
 
@@ -19,16 +19,17 @@ err_t BLECharacteristicEncoder::begin() {
   	return ERROR_NONE;
 }
 
-err_t BLECharacteristicEncoder::notify(const struct EncoderMeasurement meas) {
-	return BLECharacteristic::notify((const void*)&meas, (uint16_t) sizeof(meas));
+err_t BLECharacteristicEncoder::notify(const struct EncoderMeasurement2 meas) {
+	
+	return BLECharacteristic::notify((const void*) &meas, (uint16_t) 8);
 }
 
 err_t BLECharacteristicEncoder::notify(const uint16_t sensor_id, const float angle) {
-	struct EncoderMeasurement meas {
-		sensor_id,
-		millis(),
-		angle
-	};
+	struct EncoderMeasurement2 meas;
+
+	//meas.sensor_id = sensor_id;
+	meas.took_at = millis();
+	meas.angle = angle;
 	
 	return BLECharacteristicEncoder::notify(meas);
 }

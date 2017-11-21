@@ -9,7 +9,7 @@ Encoder::Encoder(uint8_t pin) : _pin(pin) {
 
 
 void Encoder::setup() {
-
+	pinMode(_pin, INPUT);
 }
 
 void Encoder::read_angle(float *angle) {

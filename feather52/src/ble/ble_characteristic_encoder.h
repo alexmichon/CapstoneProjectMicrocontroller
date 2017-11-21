@@ -24,12 +24,11 @@ public:
 	BLECharacteristicEncoder();
 
 	err_t begin();
-	err_t notify(const struct EncoderMeasurement meas);
+	err_t notify(const struct EncoderMeasurement2 meas);
 	err_t notify(const uint16_t sensor_id, const float angle);
 };
 
-struct EncoderMeasurement {
-	uint16_t sensor_id;
+struct EncoderMeasurement2 {
 	uint32_t took_at;
 	float angle;
 };
