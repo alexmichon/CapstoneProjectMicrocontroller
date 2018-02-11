@@ -7,12 +7,13 @@
 
 
 
-#define ENCODER_ELBOW_ID 1
-#define IMU_ARM_ID 2
+//#define ENCODER_ELBOW_ID 1
+#define IMU_UPPER_ARM_ID 1
+#define IMU_LOWER_ARM_ID 2
 
 
 
-#define ENCODER_PIN 7
+//#define ENCODER_PIN 7
 
 #define BLE_MANUFACTURER "Adafruit Industries"
 #define BLE_MODEL "Bluefruit Feather52"
@@ -24,18 +25,21 @@
 
 
 
-IMU imu = IMU();
-Encoder encoder = Encoder(ENCODER_PIN);
+IMU imuUpper = IMU();
+IMU imuLower = IMU();
+//Encoder encoder = Encoder(ENCODER_PIN);
+
+long batch = 0;
 
 float acc[3];
 float gyr[3];
-float angle;
+//float angle;
 
 
 
 BLEServiceSensors service = BLEServiceSensors();
 BLECharacteristicImu imuChar;
-BLECharacteristicEncoder encoderChar;
+//BLECharacteristicEncoder encoderChar;
 
 BLEDis bledis;    // DIS (Device Information Service) helper class instance
 BLEBas blebas;    // BAS (Battery Service) helper class instance
@@ -63,8 +67,9 @@ void setup()
   Serial.println("-----------------------\n");
 
   // Initialize sensors
-  imu.setup();
-  encoder.setup();
+  imuUpper.setup();
+  imuLower.setup();
+  //encoder.setup();
 
   // Initialize the Bluefruit module
   Serial.println("Initialise the Bluefruit nRF52 module");
@@ -134,7 +139,7 @@ void setupService(void)
 {
   service.begin();
   imuChar = service.getImuCharacteristic();
-  encoderChar = service.getEncoderCharacteristic();
+  //encoderChar = service.getEncoderCharacteristic();
 }
 
 void connect_callback(uint16_t conn_handle)
@@ -160,19 +165,23 @@ void loop()
   digitalToggle(LED_RED);
   
   if ( Bluefruit.connected() ) {
+
+    batch++;
         
-    imu.read_acc(acc);
-    imuChar.notify(IMU_ARM_ID, IMU_DATA_ACC, acc[0], acc[1], acc[2]);
-
-    delay(100);
+    imuUpper.read_acc(acc);
+    imuChar.notify(IMU_UPPER_ARM_ID, IMU_DATA_ACC, batch, acc[0], acc[1], acc[2]);
     
-    imu.read_gyr(gyr);
-    imuChar.notify(IMU_ARM_ID, IMU_DATA_GYR, gyr[0], gyr[1], gyr[2]);
+    imuUpper.read_gyr(gyr);
+    imuChar.notify(IMU_UPPER_ARM_ID, IMU_DATA_GYR, batch, gyr[0], gyr[1], gyr[2]);
 
-    delay(100);
+    imuLower.read_acc(acc);
+    imuChar.notify(IMU_LOWER_ARM_ID, IMU_DATA_ACC, batch, acc[0], acc[1], acc[2]);
+    
+    imuLower.read_gyr(gyr);
+    imuChar.notify(IMU_LOWER_ARM_ID, IMU_DATA_GYR, batch, gyr[0], gyr[1], gyr[2]);
 
-    encoder.read_angle(&angle);
-    encoderChar.notify(ENCODER_ELBOW_ID, angle);
+    // encoder.read_angle(&angle);
+    // encoderChar.notify(ENCODER_ELBOW_ID, angle);
   }
 
   delay(100);

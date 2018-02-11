@@ -16,13 +16,14 @@ public:
 	BLECharacteristicImu();
 	
 	err_t notify(const struct ImuMeasurement meas);
-	err_t notify(const uint16_t sensor_id, const uint16_t type, const float data_x, const float data_y, const float data_z);
+	err_t notify(const uint8_t sensor_id, const uint8_t type, const uint16_t batch, const float data_x, const float data_y, const float data_z);
 };
 
 
 struct ImuMeasurement {
-	uint16_t sensor_id;
-	uint16_t data_type;
+	uint8_t sensor_id;
+	uint8_t data_type;
+	uint16_t batch;
 	uint32_t took_at;
 	float data_x;
 	float data_y;

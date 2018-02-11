@@ -16,9 +16,9 @@ err_t BLECharacteristicImu::notify(const struct ImuMeasurement meas) {
 }
 
 
-err_t BLECharacteristicImu::notify(const uint16_t sensor_id, const uint16_t type, const float data_x, const float data_y, const float data_z) {
+err_t BLECharacteristicImu::notify(const uint8_t sensor_id, const uint8_t type, const uint16_t batch, const float data_x, const float data_y, const float data_z) {
 	struct ImuMeasurement meas {
-		sensor_id, type, millis(), data_x, data_y, data_z
+		sensor_id, type, batch, millis(), data_x, data_y, data_z
 	};
 
 	return BLECharacteristicImu::notify(meas);

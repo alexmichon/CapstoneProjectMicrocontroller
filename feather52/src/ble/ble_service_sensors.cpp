@@ -3,8 +3,8 @@
 
 
 BLEServiceSensors::BLEServiceSensors() : BLEService(UUID128_BLE_SERVICE_SENSORS),
-	imuCharacteristic(BLECharacteristicImu()),
-	encoderCharacteristic(BLECharacteristicEncoder())
+	imuCharacteristic(BLECharacteristicImu())
+	//encoderCharacteristic(BLECharacteristicEncoder())
 {
 	
 }
@@ -17,7 +17,7 @@ err_t BLEServiceSensors::begin() {
 	VERIFY_STATUS( BLEService::begin() );
 
 	VERIFY_STATUS( imuCharacteristic.begin() 		);
-	VERIFY_STATUS( encoderCharacteristic.begin() 	);
+	//VERIFY_STATUS( encoderCharacteristic.begin() 	);
 
 	return ERROR_NONE;
 }
