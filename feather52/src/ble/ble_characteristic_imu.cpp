@@ -17,13 +17,18 @@ err_t BLECharacteristicImu::notify(const struct ImuMeasurement meas) {
 
 
 err_t BLECharacteristicImu::notify(const uint8_t sensor_id, const uint8_t type, const uint16_t batch, const float data_x, const float data_y, const float data_z) {
-	struct ImuMeasurement meas {
-		sensor_id, type, batch, millis(), data_x, data_y, data_z
-	};
+	struct ImuMeasurement meas;
+	meas.sensor_id = sensor_id;
+	meas.data_type = type;
+	meas.batch = batch;
+	meas.took_at = millis();
+	meas.data_x = data_x;
+	meas.data_y = data_y;
+	meas.data_z = data_z;
 
 	return BLECharacteristicImu::notify(meas);
 }
 
 static void cccd_callback(BLECharacteristic& chr, uint16_t cccd_value) {
-	Serial.println("[IMU] CCCD Callback");
+	
 }

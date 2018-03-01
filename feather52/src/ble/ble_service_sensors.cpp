@@ -13,7 +13,6 @@ BLEServiceSensors::BLEServiceSensors() : BLEService(UUID128_BLE_SERVICE_SENSORS)
 
 
 err_t BLEServiceSensors::begin() {
-	Serial.println("[SERVICE_SENSORS] begin");
 	VERIFY_STATUS( BLEService::begin() );
 
 	VERIFY_STATUS( imuCharacteristic.begin() 		);
