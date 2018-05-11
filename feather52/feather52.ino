@@ -208,8 +208,8 @@ void loop()
     imuTorso.read_quaternion(quaternion);
     imuChar.notify(IMU_TORSO_ARM_ID, IMU_DATA_QUATERNION1, batch, quaternion[0], quaternion[1], quaternion[2]);
     imuChar.notify(IMU_TORSO_ARM_ID, IMU_DATA_QUATERNION2, batch, quaternion[3], 0, 0);
-    imuTorso.read_euler(euler);
-    imuChar.notify(IMU_TORSO_ARM_ID, IMU_DATA_EULER, batch, euler[0], euler[1], euler[2]);
+    // imuTorso.read_euler(euler);
+    // imuChar.notify(IMU_TORSO_ARM_ID, IMU_DATA_EULER, batch, euler[0], euler[1], euler[2]);
         
     imuUpper.read(acc, gyr, mag);
     imuChar.notify(IMU_UPPER_ARM_ID, IMU_DATA_ACC, batch, acc[0], acc[1], acc[2]);
@@ -219,8 +219,8 @@ void loop()
     imuUpper.read_quaternion(quaternion);
     imuChar.notify(IMU_UPPER_ARM_ID, IMU_DATA_QUATERNION1, batch, quaternion[0], quaternion[1], quaternion[2]);
     imuChar.notify(IMU_UPPER_ARM_ID, IMU_DATA_QUATERNION2, batch, quaternion[3], 0, 0);
-    imuUpper.read_euler(euler);
-    imuChar.notify(IMU_UPPER_ARM_ID, IMU_DATA_EULER, batch, euler[0], euler[1], euler[2]);
+    // imuUpper.read_euler(euler);
+    // imuChar.notify(IMU_UPPER_ARM_ID, IMU_DATA_EULER, batch, euler[0], euler[1], euler[2]);
 
     imuLower.read(acc, gyr, mag);
     imuChar.notify(IMU_LOWER_ARM_ID, IMU_DATA_ACC, batch, acc[0], acc[1], acc[2]);
@@ -230,12 +230,12 @@ void loop()
     imuLower.read_quaternion(quaternion);
     imuChar.notify(IMU_LOWER_ARM_ID, IMU_DATA_QUATERNION1, batch, quaternion[0], quaternion[1], quaternion[2]);
     imuChar.notify(IMU_LOWER_ARM_ID, IMU_DATA_QUATERNION2, batch, quaternion[3], 0, 0);
-    imuLower.read_euler(euler);
-    imuChar.notify(IMU_LOWER_ARM_ID, IMU_DATA_EULER, batch, euler[0], euler[1], euler[2]);
+    // imuLower.read_euler(euler);
+    // imuChar.notify(IMU_LOWER_ARM_ID, IMU_DATA_EULER, batch, euler[0], euler[1], euler[2]);
 
     // encoder.read_angle(&angle);
     // encoderChar.notify(ENCODER_ELBOW_ID, angle);
   }
 
-  delay(50);
+  delay(10);
 }
